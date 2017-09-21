@@ -1,9 +1,7 @@
+#!/usr/bin/python
 #
-#Script to login to routers and return BGP neighbours. Return if UP/DOWN and description if down.
-#Currently setup for Junos devices only.
-#
-#Madoc Batters 20/09/2017
-#
+#bgp-peer.py
+#Script to return BGP neighbour status. Return UP/DOWN list and description if down.
 
 import re, getpass, netmiko
 from netmiko import ConnectHandler
@@ -19,9 +17,14 @@ device_type="juniper"
 
 
 #Insert Device hostnames between treble quotes below, will modify to call hosts from a file:
+#Start User Variables
+
 j_routers = '''
 
 '''.strip().splitlines()
+
+#End User Variables
+#Below there be dragons
 
 totalpeer=0
 alldownpeer2=""
@@ -66,7 +69,7 @@ for j_rtr in j_routers:
                 totalpeer += 1
                 print (line)
 
-#Below could do with less repo            
+#Down Peers to match status of Active, Idle and Connect state.          
 
         print ("Peers DOWN")
         for line in lineoutput:
