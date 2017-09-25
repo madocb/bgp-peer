@@ -1,0 +1,8 @@
+#device-list.txt
+#Device hosts file referenced by bgp-peer.py
+#All lines with "#" will be ignored
+#
+#Enter hostname or IP address of Router below
+# e.g. myrouter01
+#
+examplehosttodelete

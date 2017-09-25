@@ -2,9 +2,22 @@
 #
 #bgp-peer.py
 #Script to return BGP neighbour status. Return UP/DOWN list and description if down.
+#Populate device-list.txt with host names.
 
+import os.path
 import re, getpass, netmiko
 from netmiko import ConnectHandler
+
+#Define pointers
+totalpeer=0
+alldownpeer2=""
+bgpsum = "show bgp summary"
+device_type="juniper"
+j_routers = []
+
+scriptpath = os.path.dirname(__file__)
+filename = os.path.join(scriptpath, 'device-list.txt')
+hostfile=open(filename)
 
 ssh_exceptions = (netmiko.ssh_exception.NetMikoAuthenticationException,
                   netmiko.ssh_exception.NetMikoTimeoutException, netmiko.NetMikoTimeoutException,
@@ -13,22 +26,16 @@ ssh_exceptions = (netmiko.ssh_exception.NetMikoAuthenticationException,
 
 un = input('Username: ')
 pw = getpass.getpass()
-device_type="juniper"
+my_file_object = open("device-list.txt", "r")
 
+#Read from hostfile
+for line in hostfile:
+    if "#" not in line:
+        j_routers.append(line.strip())
 
-#Insert Device hostnames between treble quotes below, will modify to call hosts from a file:
-#Start User Variables
+hostfile.close()
 
-j_routers = '''
-
-'''.strip().splitlines()
-
-#End User Variables
 #Below there be dragons
-
-totalpeer=0
-alldownpeer2=""
-bgpsum = "show bgp summary"
 
 def devicetype():
     madshow = ssh_conn.send_command_expect("show version")
@@ -69,8 +76,7 @@ for j_rtr in j_routers:
                 totalpeer += 1
                 print (line)
 
-#Down Peers to match status of Active, Idle and Connect state.          
-
+#Down Peers to match status of Active, Idle and Connect BGP state.
         print ("Peers DOWN")
         for line in lineoutput:
             if " Acti" in line:
@@ -101,4 +107,4 @@ print ("#"*79)
 print ("Total number of BGP Peerings checked:",totalpeer)
 print ("All Peers that are down:")
 print (alldownpeer2)
-
+print ("#"*79)
